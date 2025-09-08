@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./navbar";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { disabledNavbar } from "@/config/disableNavbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,13 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [count, setCount] = useState(0);
+  const pathname = usePathname();
 
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar count={count} setCount={setCount} />
+        {!disabledNavbar.includes(pathname) && (
+          <Navbar count={count} setCount={setCount} />
+        )}
         {children}
       </body>
     </html>
