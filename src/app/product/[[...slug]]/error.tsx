@@ -14,7 +14,7 @@ export default function ErrorPage({
   return (
     <div>
       <h2>Something when Wrong!</h2>
-      <button onClick={() => reset()}> Try Again</button>
+      <button onClick={() => reset()}> try Again</button>
     </div>
   );
 }
