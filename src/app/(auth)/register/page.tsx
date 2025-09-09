@@ -1,6 +1,38 @@
+"use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function RegisterPage() {
+  const { push } = useRouter();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const handleRegister = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          email: e.currentTarget.email.value,
+          password: e.currentTarget.password.value,
+          fullname: e.currentTarget.fullname.value,
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        setError(result.message);
+      } else {
+        push("/login");
+      }
+    } catch (err) {
+      console.log(err);
+      setError(err as unknown as string);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -11,7 +43,8 @@ export default function RegisterPage() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <p className="text-red-600 text-xs text-center font-bold">{error}</p>
+          <form onSubmit={(e) => handleRegister(e)} className="space-y-6">
             <div>
               <label
                 htmlFor="fullname"
@@ -74,9 +107,10 @@ export default function RegisterPage() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:cursor-not-allowed"
+                disabled={isLoading}
               >
-                Sign Up
+                {isLoading ? "..." : "Sign Up"}
               </button>
             </div>
           </form>

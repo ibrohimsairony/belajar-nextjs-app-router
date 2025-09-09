@@ -1,4 +1,6 @@
-const products = [
+import { retrieveData, retrieveDataById } from "@/lib/firebase/service";
+
+const data = [
   {
     id: 1,
     title: "Sepatu baru",
@@ -41,7 +43,7 @@ export async function GET(req: Request) {
   const id = searchParams.get("id");
   console.log(id);
   if (id) {
-    const DetailProduct = products.find((item) => item.id === Number(id));
+    const DetailProduct = await retrieveDataById("products", id);
     if (DetailProduct) {
       return Response.json({
         status: 200,
@@ -51,6 +53,8 @@ export async function GET(req: Request) {
     }
     return Response.json({ status: "404", message: "Data not Found" });
   }
+
+  const products = await retrieveData("products");
   return Response.json({
     status: 200,
     message: "success Get Products",
