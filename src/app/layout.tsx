@@ -5,6 +5,7 @@ import Navbar from "./navbar";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { disabledNavbar } from "@/config/disableNavbar";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,10 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {!disabledNavbar.includes(pathname) && (
-          <Navbar count={count} setCount={setCount} />
-        )}
-        {children}
+        <SessionProvider>
+          {!disabledNavbar.includes(pathname) && (
+            <Navbar count={count} setCount={setCount} />
+          )}
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

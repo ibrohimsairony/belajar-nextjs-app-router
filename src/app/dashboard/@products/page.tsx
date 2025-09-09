@@ -19,7 +19,7 @@ export default function AdminProductPage() {
     if (res.revalidate) setStatus("Revalidate Success");
   };
   return (
-    <div>
+    <div className="w-1/2 h-64 bg-slate-400 rounded-xl flex justify-center items-center">
       <p>{status}</p>
       <button
         className="cursor-pointer py-2 px-3 bg-blue-400 rounded-lg m-5"

@@ -1,18 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
-  const handleLogin = (event: FormEvent<any>) => {
-    event.preventDefault();
-    fetch("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email: event.currentTarget.email.value,
-        password: event.currentTarget.password.value,
-      }),
-    });
+  const { push } = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: e.currentTarget.email.value,
+        password: e.currentTarget.password.value,
+        callbackUrl: "/dashboard",
+      });
+      if (!res?.error) {
+        push("/dashboard");
+      } else {
+        console.log(res.error);
+        setError(res.error);
+      }
+    } catch (err) {
+      console.log(err);
+      setError(err as unknown as string);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <>
@@ -24,6 +42,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+          <p className="text-xs text-red-700 text-center">{error}</p>
           <form onClick={(e) => handleLogin(e)} className="space-y-6">
             <div>
               <label
@@ -76,9 +95,10 @@ export default function LoginPage() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-slate-200 hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-slate-200 hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:cursor-not-allowed"
+                disabled={loading}
               >
-                Sign in
+                {loading ? "..." : "Sign in"}
               </button>
             </div>
           </form>
